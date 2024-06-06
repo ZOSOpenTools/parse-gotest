@@ -22,8 +22,8 @@ The program parse the output from result go test -json.
 ## Install 
 build from source code 
 ```
-git clone
-go build
+git clone https://github.com/bluecivet/parse-gotest.git
+go build 
 ```
 
 ## Example
