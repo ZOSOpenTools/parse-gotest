@@ -5,19 +5,19 @@ import (
 )
 
 type JsonData struct {
-	Time string
-	Action string
+	Time    string
+	Action  string
 	Package string
-	Test string 
-	Output string 
+	Test    string
+	Output  string
 	Elapsed float64
 }
 
 func (jd *JsonData) UnmarshalJSON(b []byte) error {
-	type Alias JsonData 
+	type Alias JsonData
 	type Aux struct {
-		Test *string `json:"Test"`
-		Output *string `json:"Output"`
+		Test    *string  `json:"Test"`
+		Output  *string  `json:"Output"`
 		Elapsed *float64 `json:"Elapsed"`
 		*Alias
 	}
