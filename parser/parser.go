@@ -5,21 +5,20 @@ import (
 	"strings"
 	"strconv"
 	"fmt"
-	"io"
+	"bufio"
 )
 
 func ParseGoTestJson(text string) (*TestSummary, error){
-	jsonDecoder := json.NewDecoder(strings.NewReader(text))
+	scanner := bufio.NewScanner(strings.NewReader(text))
 	summary := new(TestSummary)
 	summary.PackageResults = make(map[string]*PackageResult)
-
-	for {
+	errs := make([]error, 0, 3)
+	for scanner.Scan(){
+		line := scanner.Text()
 		var data JsonData = JsonData{}
-		if err := jsonDecoder.Decode(&data); err == io.EOF {
-			break
-		} else if err != nil {
-			fmt.Errorf("parsing error: %s", err.Error())
-			return nil, err
+		if err := json.Unmarshal([]byte(line), &data); err != nil {
+			err = fmt.Errorf("parsing error: %s, line: %s", err.Error(), line)
+			errs = append(errs, err)
 		}
 
 		pkgName := data.Package
@@ -69,6 +68,15 @@ func ParseGoTestJson(text string) (*TestSummary, error){
 			}
 
 		} 
+	}
+
+	if len(errs) > 0 {
+		var sb strings.Builder
+		for _, err := range errs {
+			sb.WriteString(err.Error())
+			sb.WriteString("\n")
+		}
+		return summary, fmt.Errorf("parse json error: \n%s", sb.String())
 	}
 
 	return summary, nil

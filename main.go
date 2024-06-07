@@ -34,7 +34,10 @@ func readInput(args []string) string {
 	}
 	var sb strings.Builder
 	for _, arg := range args {
-		targetPath := filepath.Join(currentPath, arg)
+		targetPath := arg
+		if !filepath.IsAbs(arg) {	
+			targetPath = filepath.Join(currentPath, arg)
+		}
 
 		if isDir(targetPath) {
 			files, err := os.ReadDir(targetPath)
@@ -222,7 +225,6 @@ func main() {
 	goTestSummary, err := parser.ParseGoTestJson(testoutput)
 	if err != nil {
 		println("Cannot parse json data: ", err.Error())
-		return
 	}
 
 	if *summary {
