@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestPass1(t *testing.T) {
@@ -10,7 +10,7 @@ func TestPass1(t *testing.T) {
 }
 
 func TestPass2(t *testing.T) {
-	// pass 
+	// pass
 }
 
 func TestFail1(t *testing.T) {

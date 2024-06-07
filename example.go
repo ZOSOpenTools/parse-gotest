@@ -26,7 +26,7 @@ func ExampleUsage() {
 	fmt.Println("\n========================\n")
 	packageList := goTestSummary.TestPackageList()
 	fmt.Println("package test: ", packageList)
-	
+
 	for _, pkgName := range packageList {
 		fmt.Println("\n----------------------------------\n")
 		fmt.Println(goTestSummary.PackageResults[pkgName])

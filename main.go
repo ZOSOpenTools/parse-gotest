@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"strings"
-	"path/filepath"
-	"os"
 	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/bluecivet/parse-gotest/parser"
 )
@@ -16,7 +16,7 @@ func isDir(path string) bool {
 		panic(err)
 	}
 
-	return fileInfo.IsDir() 
+	return fileInfo.IsDir()
 }
 
 func readFile(path string) string {
@@ -35,7 +35,7 @@ func readInput(args []string) string {
 	var sb strings.Builder
 	for _, arg := range args {
 		targetPath := arg
-		if !filepath.IsAbs(arg) {	
+		if !filepath.IsAbs(arg) {
 			targetPath = filepath.Join(currentPath, arg)
 		}
 
@@ -90,7 +90,7 @@ func outputAllTestDetail(goTestSummary *parser.TestSummary) {
 	fmt.Println("Test Package:", packageList)
 	for _, pkgName := range packageList {
 		fmt.Println("-----------------------------------------------------------")
-		fmt.Println( goTestSummary.PackageResults[pkgName])
+		fmt.Println(goTestSummary.PackageResults[pkgName])
 		fmt.Println("-----------------------------------------------------------")
 	}
 }
@@ -141,22 +141,26 @@ func outputTestName(goTestSummary *parser.TestSummary, testType string, printByP
 	var tests []string
 	for pkgName, pr := range goTestSummary.PackageResults {
 		switch testType {
-			case "all":  tests =append(tests, pr.RunTests...)
-			case "pass": tests =append(tests, pr.PassTests...)
-			case "fail": tests =append(tests, pr.FailTests...)
-			case "skip": tests =append(tests, pr.SkipTests...)
-			default:
-				println("unknow test type: ", testType)
-				return
+		case "all":
+			tests = append(tests, pr.RunTests...)
+		case "pass":
+			tests = append(tests, pr.PassTests...)
+		case "fail":
+			tests = append(tests, pr.FailTests...)
+		case "skip":
+			tests = append(tests, pr.SkipTests...)
+		default:
+			println("unknow test type: ", testType)
+			return
 		}
-		if printByPackage && len(tests) > 0{
+		if printByPackage && len(tests) > 0 {
 			fmt.Println("package: ", pkgName)
 			fmt.Println("-----------------------------------------------------------")
 			fmt.Println(strings.Join(tests, "\n"), "\n")
-			tests = tests[:0]   // clear tests for next package
+			tests = tests[:0] // clear tests for next package
 		}
 	}
-	
+
 	if !printByPackage {
 		// tests contains all the test name from all the package in here
 		fmt.Println(strings.Join(tests, "\n"))
@@ -164,29 +168,29 @@ func outputTestName(goTestSummary *parser.TestSummary, testType string, printByP
 }
 
 func outputSummary(goTestSummary *parser.TestSummary, delimeter string) {
-	fmt.Printf("total:%d%spass:%d%sfail:%d%sskip:%d\n", 
-	goTestSummary.Total,
-	delimeter,
-	goTestSummary.Pass,
-	delimeter,
-	goTestSummary.Fail,
-	delimeter,
-	goTestSummary.Skip)
+	fmt.Printf("total:%d%spass:%d%sfail:%d%sskip:%d\n",
+		goTestSummary.Total,
+		delimeter,
+		goTestSummary.Pass,
+		delimeter,
+		goTestSummary.Fail,
+		delimeter,
+		goTestSummary.Skip)
 }
 
 var (
-	summary *bool 
-	delimeter  *string
-	testType *string 
-	detail *bool 
-	list *bool
+	summary       *bool
+	delimeter     *string
+	testType      *string
+	detail        *bool
+	list          *bool
 	listByPackage *bool
 )
 
 func init() {
 	flag.Usage = func() {
 		helpText := `The program parse the output from result go test -json.
-		parse-gotest [-options] [files] [directories]` 
+		parse-gotest [-options] [files] [directories]`
 		fmt.Println(helpText, "\n")
 		flag.PrintDefaults()
 	}
@@ -206,14 +210,16 @@ func main() {
 		return
 	}
 
-	// handle differently for -detail because by default it is enable 
+	// handle differently for -detail because by default it is enable
 	// if -list or -summary is specify, -detail need to be specify explicitly to be enable
 	isSetDetail := false
 	isSetOther := false
-	flag.Visit(func (f *flag.Flag) {
+	flag.Visit(func(f *flag.Flag) {
 		switch f.Name {
-			case "summary", "s", "list", "l": isSetOther = true 
-			case "detail": isSetDetail = true
+		case "summary", "s", "list", "l":
+			isSetOther = true
+		case "detail":
+			isSetDetail = true
 		}
 	})
 	if isSetOther && !isSetDetail {
@@ -233,17 +239,21 @@ func main() {
 
 	if *detail {
 		switch *testType {
-			case "all": outputAllTestDetail(goTestSummary)
-			case "fail": outputFailTestDetail(goTestSummary)
-			case "skip": outputSkipTestDetail(goTestSummary)
-			case "pass": outputPassTestDetail(goTestSummary)
-			default: println("unknow tyoe: ", testType)
+		case "all":
+			outputAllTestDetail(goTestSummary)
+		case "fail":
+			outputFailTestDetail(goTestSummary)
+		case "skip":
+			outputSkipTestDetail(goTestSummary)
+		case "pass":
+			outputPassTestDetail(goTestSummary)
+		default:
+			println("unknow tyoe: ", testType)
 		}
 	}
 
 	if *list {
 		outputTestName(goTestSummary, *testType, *listByPackage)
 	}
-	
-}
 
+}

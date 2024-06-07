@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-type TestSummary struct{
-	Pass int
-	Fail int
-	Skip int
+type TestSummary struct {
+	Pass  int
+	Fail  int
+	Skip  int
 	Total int
 
 	// each package result: package name -> the result of the package

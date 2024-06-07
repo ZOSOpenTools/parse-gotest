@@ -6,12 +6,12 @@ import (
 )
 
 type PackageResult struct {
-	Package string
-	RunTests   []string   // names of the tests that are runned. This will be to total tests that are runned
-	PassTests []string	  // names of the tests that are passed
-	FailTests []string   // names of the tests that are failed
-	SkipTests []string   // names of the tests that are skiped
-	TestOutput map[string]string  // output of each test results: test name -> testcase output
+	Package    string
+	RunTests   []string          // names of the tests that are runned. This will be to total tests that are runned
+	PassTests  []string          // names of the tests that are passed
+	FailTests  []string          // names of the tests that are failed
+	SkipTests  []string          // names of the tests that are skiped
+	TestOutput map[string]string // output of each test results: test name -> testcase output
 }
 
 func NewPackageResult(pkgName string) *PackageResult {
@@ -58,7 +58,7 @@ func (pr *PackageResult) AllTestStatus() map[string]string {
 	for _, runTest := range pr.RunTests {
 		result[runTest] = "?"
 	}
-	
+
 	// e.g: setting "testA": "pass | fail | skip"
 	setTestStatus(&result, &pr.PassTests, "pass")
 	setTestStatus(&result, &pr.FailTests, "fail")
@@ -67,8 +67,8 @@ func (pr *PackageResult) AllTestStatus() map[string]string {
 }
 
 func setTestStatus(testSet *map[string]string, statusTestSet *[]string, status string) {
-		// testSet must be init first
-		for _, test := range *statusTestSet {
+	// testSet must be init first
+	for _, test := range *statusTestSet {
 		if _, ok := (*testSet)[test]; ok {
 			(*testSet)[test] = status
 		} else {
@@ -79,7 +79,7 @@ func setTestStatus(testSet *map[string]string, statusTestSet *[]string, status s
 
 func (pr *PackageResult) String() string {
 	summaryStr := pr.Summary()
-	var sb strings.Builder 
+	var sb strings.Builder
 	sb.WriteString(summaryStr)
 
 	allTestStatus := pr.AllTestStatus()
