@@ -70,6 +70,13 @@ func ParseGoTestJson(text string) (*TestSummary, error) {
 		}
 	}
 
+	// unknow action view as fail
+	// in go1.22 running "go test -v -json" for a panic
+	// it causes the package to fail but not show test action as fail
+	for _, pr := range summary.PackageResults {
+		summary.Fail += handleExtraTest(pr)
+	}
+
 	if len(errs) > 0 {
 		var sb strings.Builder
 		for _, err := range errs {
@@ -80,4 +87,42 @@ func ParseGoTestJson(text string) (*TestSummary, error) {
 	}
 
 	return summary, nil
+}
+
+// If a test is run but does not produce a result
+// (pass, fail, skip) in JSON file, we mark it as a failed test.
+// An example of this is a test that causes a panic,
+// which can happen in Go 1.22.
+func handleExtraTest(pr *PackageResult) (numOfFail int) {
+	if len(pr.RunTests) == len(pr.PassTests)+len(pr.FailTests)+len(pr.SkipTests) {
+		return
+	}
+
+	visitMap := make(map[string]bool, len(pr.RunTests))
+	// init visitMap
+	for _, runTest := range pr.RunTests {
+		visitMap[runTest] = false
+	}
+
+	// start visiting
+	for _, testName := range pr.PassTests {
+		visitMap[testName] = true
+	}
+
+	for _, testName := range pr.FailTests {
+		visitMap[testName] = true
+	}
+
+	for _, testName := range pr.SkipTests {
+		visitMap[testName] = true
+	}
+
+	// check result
+	for testName, visited := range visitMap {
+		if !visited {
+			numOfFail++
+			pr.FailTests = append(pr.FailTests, testName)
+		}
+	}
+	return
 }

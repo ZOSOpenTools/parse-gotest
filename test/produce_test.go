@@ -5,6 +5,17 @@ import (
 	"testing"
 )
 
+/*
+func panicFunc(){
+	panic("panic test")
+}
+
+func TestPanic(t *testing.T) {
+	panicFunc()
+}
+
+*/
+
 func TestPass1(t *testing.T) {
 	// pass
 }
